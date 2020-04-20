@@ -7,30 +7,34 @@ let PageEncoding = (() => {
     // 某Tab的编码都暂存一下，这是prefix
     const ENCODING_PREFIX = 'FE_ENCODING_PREFIX_';
     let listenerAddedFlag = false;
+    let contextMenuId = null;
+
+    let resetEncoding = [
+        ['default', '默认/重置']
+    ];
 
     // 系统支持的编码列表
-    let EncodingList = [
-        ['default', '默认'],
-        ['UTF-8', 'Unicode'],
-        ['GBK', '简体中文'],
-        ['GB3212', '简体中文'],
-        ['GB18030', '简体中文'],
-        ['Big5', '繁体中文'],
-        ['UTF-16LE', 'Unicode'],
-        ['EUC-KR', '韩文'],
-        ['Shift_JIS', '日文'],
-        ['EUC-JP', '日文'],
-        ['ISO-2022-JP', '日文'],
-        ['Windows-874', '泰文'],
-        ['Windows-1254', '土耳其文'],
-        ['ISO-8859-7', '希腊文'],
-        ['Windows-1253', '希腊文'],
-        ['Windows-1252', '西文'],
-        ['ISO-8859-15', '西文'],
-        ['Macintosh', '西文'],
-        ['Windows-1258', '越南文'],
-        ['ISO-8859-2', '中欧文'],
-        ['Windows-1250', '中欧文']
+    let SystemCharsetList = [
+        ['UTF-8', 'Unicode（UTF-8）'],
+        ['GBK', '简体中文（GBK）'],
+        ['GB3212', '简体中文（GB3212）'],
+        ['GB18030', '简体中文（GB18030）'],
+        ['Big5', '繁体中文（Big5）'],
+        ['UTF-16LE', 'Unicode（UTF-16LE）'],
+        ['EUC-KR', '韩文（EUC-KR）'],
+        ['Shift_JIS', '日文（Shift_JIS）'],
+        ['EUC-JP', '日文（EUC-JP）'],
+        ['ISO-2022-JP', '日文（ISO-2022-JP）'],
+        ['Windows-874', '泰文（Windows-874）'],
+        ['Windows-1254', '土耳其文（Windows-1254）'],
+        ['ISO-8859-7', '希腊文（ISO-8859-7）'],
+        ['Windows-1253', '希腊文（Windows-1253）'],
+        ['Windows-1252', '西文（Windows-1252）'],
+        ['ISO-8859-15', '西文（ISO-8859-15）'],
+        ['Macintosh', '西文（Macintosh）'],
+        ['Windows-1258', '越南文（Windows-1258）'],
+        ['ISO-8859-2', '中欧文（ISO-8859-2）'],
+        ['Windows-1250', '中欧文（Windows-1250）']
     ];
 
 
@@ -42,7 +46,7 @@ let PageEncoding = (() => {
      */
     let createMenu = () => {
 
-        let contextMenuId = chrome.contextMenus.create({
+        contextMenuId = chrome.contextMenus.create({
             title: "FH-Charset",
             contexts: ['all'],
             documentUrlPatterns: ['http://*/*', 'https://*/*', 'file://*/*']
@@ -63,16 +67,25 @@ let PageEncoding = (() => {
             parentId: contextMenuId
         });
 
-        EncodingList.forEach(item => {
+        // 如果已经在设置页重新设置过字符集，这里则做一个覆盖，负责还原为默认
+        let encodingList = Array.from(SystemCharsetList);
+        let customEncodings = JSON.parse(localStorage.getItem('fh-charset-customs') || '[]');
+        if (customEncodings && customEncodings.length) {
+            encodingList = customEncodings;
+        } else {
+            localStorage.setItem('fh-charset-customs', JSON.stringify(SystemCharsetList));
+        }
+
+        resetEncoding.concat(encodingList).forEach(item => {
             menuMap[item[0].toUpperCase()] = chrome.contextMenus.create({
                 type: "radio",
                 contexts: ["all"],
-                title: item[0] === 'default' ? '默认' : `${item[1]}（${item[0]}）`,
-                checked: item[0] === 'default',
+                title: item[0] === resetEncoding[0][0] ? resetEncoding[0][1] : `${item[1]}`,
+                checked: false,
                 parentId: contextMenuId,
                 onclick: (info, tab) => {
-                    if (!info.wasChecked) {
-                        if (item[0] === 'default') {
+                    if (!info.wasChecked || item[0] === resetEncoding[0][0]) {
+                        if (item[0] === resetEncoding[0][0]) {
                             localStorage.removeItem(ENCODING_PREFIX + tab.id);
                         } else {
                             localStorage.setItem(ENCODING_PREFIX + tab.id, item[0]);
@@ -100,18 +113,17 @@ let PageEncoding = (() => {
      * @param tabId
      */
     let updateMenu = (tabId) => {
-        Object.keys(menuMap).forEach(menu => {
-            chrome.contextMenus.update(menuMap[menu], {
-                checked: false
-            });
-        });
 
         // 选中它该选中的
         let encoding = localStorage.getItem(ENCODING_PREFIX + tabId) || '';
-        let menuId = encoding ? menuMap[encoding.toUpperCase()] : menuMap['DEFAULT'];
-        chrome.contextMenus.update(menuId || menuMap['DEFAULT'], {
-            checked: true
+        let menuId = menuMap[encoding.toUpperCase()];
+
+        Object.keys(menuMap).forEach(menu => {
+            chrome.contextMenus.update(menuMap[menu], {
+                checked: menuMap[menu] === menuId
+            });
         });
+
     };
 
 
@@ -176,6 +188,25 @@ let PageEncoding = (() => {
 
         callback && callback();
     };
+
+    chrome.runtime.onMessage.addListener(function (request, sender, callback) {
+        // 如果发生了错误，就啥都别干了
+        if (chrome.runtime.lastError) {
+            console.log(chrome.runtime.lastError);
+            return true;
+        }
+
+        if (request.type === 'fh-charset-update-menu') {
+            if (!contextMenuId) return;
+            chrome.contextMenus.removeAll(() => {
+                menuMap = {};
+                createMenu();
+            });
+        }
+
+        callback && callback();
+        return true;
+    });
 
     return {
         createMenu

@@ -1,0 +1,96 @@
+@import "bootstrap.min.css";
+
+.wrapper {
+    width:auto;
+}
+
+#pageContainer>.panel-body {
+    margin: 0 auto;
+    width: 980px;
+}
+.mod-header {
+    position: sticky;
+    top:0;
+    z-index: 100;
+}
+#pageContainer label {
+    font-weight: normal;
+}
+
+#pageContainer h4 {
+    color: #888;
+    font-size: 18px;
+}
+
+h5,h4 {
+    border-bottom : 1px solid #eee;
+    padding-bottom: 5px;
+}
+.t-hlt {
+    color:#f00;
+    font-style: italic;
+}
+.x-tips {
+    font-size: 12px;
+    color: #aaa;
+}
+.x-tips b i {
+    text-decoration: underline;
+}
+.x-donate {
+    font-size: 14px;
+    color: #d00;
+    margin-left: 10px;
+    text-decoration: underline;
+    text-decoration-style: double;
+    cursor: default;
+}
+.box-donate {
+    position: absolute;
+    top: 60px;
+    left: 150px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 5px;
+}
+[v-cloak] {
+    display: none;
+}
+.x-cur-version {
+    font-size: 12px;
+    margin-top: 4px;
+}
+.x-cur-version b,.x-cur-version i {
+    background: #5b5b5b;
+    padding: 3px 5px;
+    border-radius: 3px 0 0 3px;
+    color: #fff;
+    font-weight: lighter;
+    font-style: normal;
+    font-family: monospace;
+}
+.x-cur-version i {
+    border-radius: 0 3px 3px 0;
+    background: #0e7fbf;
+}
+table .x-op {
+    text-align: center;
+    width:72px;
+}
+table th {
+    cursor: default;
+    user-select: none;
+}
+label input[type=checkbox] {
+    margin-right: 5px;
+}
+label {
+    margin-bottom: 0;
+}
+.x-btns {
+    margin-left: 30px;
+}
+.x-btns .btn {
+    margin-right: 20px;
+}

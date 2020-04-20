@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <title>FH-Charset配置项</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="index.css"/>
+    <script type="text/javascript" src="vue.js"></script>
+</head>
+<body>
+
+    <div class="wrapper" id="pageContainer">
+
+        <div class="panel panel-default mod-header">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a href="https://www.baidufe.com/fehelper/feedback.html" target="_blank" class="x-a-high">
+                        <img src="../img/fe-16.png" alt="fehelper"/> FH-Charset</a>：自定义字符集
+
+                    <span class="x-btns">
+                        <button class="btn btn-sm btn-success" @click="saveCharset">保存修改</button>
+                        <button class="btn btn-sm btn-danger" @click="resetCharset">还原到默认</button>
+                    </span>
+                    <span class="ui-fl-r x-cur-version"><b>当前版本</b><i>v{{manifest.version}}</i></span>
+                </h3>
+            </div>
+        </div>
+
+        <div class="panel-body mod-content">
+
+            <div class="row">
+
+                <div class="x-tips">Tips：勾选下面列表中的字符集，重新定义你的右键菜单！</div>
+
+                <table class="table table-bordered table-responsive table-hover">
+                    <thead>
+                        <tr>
+                            <th class="x-op">
+                                <label><input type="checkbox" name="selectAll" ref="selectAll" @click="toggleAll($event.target.checked)">全选</label>
+                            </th>
+                            <th>字符集名称</th>
+                            <th>字符集别名</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="charset in charsetList" @click="selectCharset(charset[1])">
+                            <td class="x-op"><input type="checkbox" name="charsets" :id="charset[1]" :value="charset[1]" @click="selectCharset(false,$event)" :checked="customCharset.includes(charset[1].toLowerCase())"></td>
+                            <td class="x-charset">{{charset[0]}}</td>
+                            <td class="x-value">{{charset[1]}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="index.js"></script>
+
+</body>
+</html>

@@ -142,7 +142,7 @@ gulp.task('zip', () => {
     console.log('    去Google Chrome商店发布：');
     console.log('           https://chrome.google.com/u/1/webstore/devconsole/g07645228094812692048 \n');
     console.log('    去Microsoft Edge商店发布：');
-    console.log('           https://partner.microsoft.com/zh-CN/dashboard/microsoftedge/fd1a58dd-c709-4811-9013-e089199d7299/packages\n');
+    console.log('           https://partner.microsoft.com/zh-cn/dashboard/microsoftedge/overview\n');
     console.log('    去Firefox Addons商店发布：');
     console.log('           https://addons.mozilla.org/zh-CN/developers/addon/web前端助手-FHCharset/versions');
     console.log('================================================================================\n\n');
